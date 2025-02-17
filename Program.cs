@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
-using Polly;
-using Polly.Extensions.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +13,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>()
-    .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(2)))
-    .AddTransientHttpErrorPolicy(policy => policy.CircuitBreakerAsync(5, TimeSpan.FromMinutes(1)));
+builder.Services.AddHttpClient<ExchangeRateService>().AddStandardResilienceHandler();
+
+//builder.Services.AddResiliencePipeline("default", x =>
+//{
+//    x.AddRetry(new RetryStrategyOptions
+//    {
+//        ShouldHandle = new PredicateBuilder().Handle<Exception>(),
+//        MaxRetryAttempts = 3,
+//        Delay = TimeSpan.FromSeconds(2),
+//        BackoffType = DelayBackoffType.Exponential,
+//        UseJitter = true
+//    })
+//    .AddTimeout(TimeSpan.FromSeconds(10));
+//});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -69,3 +78,7 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{
+}

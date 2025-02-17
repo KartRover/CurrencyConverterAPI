@@ -1,5 +1,7 @@
 ﻿using CurrencyConverterAPI.Models;
 using Microsoft.Extensions.Caching.Memory;
+using Polly;
+using Polly.Registry;
 
 namespace CurrencyConverterAPI.Services
 {
@@ -7,7 +9,6 @@ namespace CurrencyConverterAPI.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IMemoryCache _cache;
-
         public ExchangeRateService(HttpClient httpClient, IMemoryCache cache)
         {
             _httpClient = httpClient;
