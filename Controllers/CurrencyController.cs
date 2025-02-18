@@ -1,5 +1,6 @@
 ﻿using CurrencyConverterAPI.Models;
 using CurrencyConverterAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyConverterAPI.Controllers
@@ -15,6 +16,7 @@ namespace CurrencyConverterAPI.Controllers
             _exchangeRateService = exchangeRateService;
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("latest")]
         public async Task<IActionResult> GetLatestRates([FromQuery] string baseCurrency)
         {
@@ -22,6 +24,7 @@ namespace CurrencyConverterAPI.Controllers
             return Ok(rates);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("convert")]
         public async Task<IActionResult> ConvertCurrency([FromBody] ConversionRequest request)
         {
@@ -34,6 +37,7 @@ namespace CurrencyConverterAPI.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("historical")]
         public async Task<IActionResult> GetHistoricalRates([FromQuery] string baseCurrency, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
