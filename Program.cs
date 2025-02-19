@@ -15,6 +15,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<ExchangeRateService>().AddStandardResilienceHandler();
 
+// Register IExchangeRateService
+builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
+
+
 //builder.Services.AddResiliencePipeline("default", x =>
 //{
 //    x.AddRetry(new RetryStrategyOptions
@@ -37,9 +41,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "yourissuer",
-            ValidAudience = "youraudience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"))
+            ValidIssuer = "https://localhost:7177/",
+            ValidAudience = "https://localhost:7177/",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this_is_a_very_secure_key_that_is_more_than_16_bytes_long"))
         };
     });
 
